@@ -9,13 +9,20 @@ class CheapShark:
             "Content-Type": "application/json",
             "Connection": "Keep-Alive"
         }
-    
+
+    def _get(self, endpoint: str, params: dict = None) -> dict:
+        return self.session.get(
+            f"{self.api}{endpoint}", params=params).json()
+
+    def _filter(self, data: dict) -> dict:
+        return {k: v for k, v in data.items() if v is not None}
+
     def get_deals_list(
             self,
             store_id: str = "1",
             page_number: int = 0,
             page_size: int = 60,
-            sort_by: str = "Deal Rating", 
+            sort_by: str = "Deal Rating",
             desc: int = 0,
             lower_price: int = 0,
             upper_price: int = 15,
@@ -24,11 +31,11 @@ class CheapShark:
             steam_app_id: str = None,
             title: str = None,
             exact: int = 0,
-            AAA: int = 0,
+            aaa: int = 0,
             steam_works: int = 0,
             on_sale: int = 0,
             output: str = None) -> dict:
-        params = {
+        params = self._filter({
             "pageNumber": page_number,
             "pageSize": page_size,
             "sortBy": sort_by,
@@ -36,7 +43,7 @@ class CheapShark:
             "lowerPrice": lower_price,
             "upperPrice": upper_price,
             "exact": exact,
-            "AAA": AAA,
+            "AAA": aaa,
             "steamworks": steam_works,
             "onSale": on_sale,
             "metacritic": metacritic,
@@ -44,50 +51,39 @@ class CheapShark:
             "steamAppID": steam_app_id,
             "title": title,
             "output": output
-        }
-        filtered_params = {
-            key: value for key, value in params.items() if value is not None
-        }
-        return self.session.get(
-            f"{self.api}/deals?storeID={store_id}", params=filtered_params).json()
+        })
+        return self._get(f"/deals?storeID={store_id}", params)
 
     def deal_lookup(self, deal_id: str) -> dict:
-        return self.session.get(
-            f"{self.api}/deals?id={deal_id}").json()
-    
+        return self._get(f"/deals?id={deal_id}")
+
     def get_games_list(
             self,
             title: str,
             steam_app_id: int,
             limit: int = 60,
             exact: int = 0) -> dict:
-        return self.session.get(
-            f"{self.api}/games?title={title}&steamAppID={steam_app_id}&limit={limit}&exact={exact}").json()
-    
+        return self._get(
+            f"/games?title={title}&steamAppID={steam_app_id}&limit={limit}&exact={exact}")
+
     def game_lookup(self, game_id: int) -> dict:
-        return self.session.get(
-            f"{self.api}/games?id={game_id}").json()
-    
+        return self._get(f"/games?id={game_id}")
+
     def games_lookup(self, game_ids: str = "128,129,130") -> dict:
-        return self.session.get(
-            f"{self.api}/games?ids={game_ids}").json()
-    
+        return self._get(f"/games?ids={game_ids}")
+
     def get_stores_list(self) -> dict:
-        return self.session.get(
-            f"{self.api}/stores").json()
-    
+        return self._get("/stores")
+
     def edit_alert(
             self,
             action: str,
             email: str,
             game_id: int,
             price: str) -> dict:
-        return self.session.get(
-            f"{self.api}/alerts?action={action}&email={email}&gameID={game_id}&price={price}").json()
-    
-    def manage_alerts(
-            self,
-            action: str,
-            email: str) -> dict:
-        return self.session.get(
-            f"{self.api}/alerts?action={action}&email={email}").json()
+        return self._get(
+            f"/alerts?action={action}&email={email}&gameID={game_id}&price={price}")
+
+    def manage_alerts(self, action: str, email: str) -> dict:
+        return self._get(
+            f"/alerts?action={action}&email={email}")
