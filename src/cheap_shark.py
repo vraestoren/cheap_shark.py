@@ -35,6 +35,7 @@ class CheapShark:
             on_sale: int = 0,
             output: str = None) -> dict:
         params = self._filter({
+            "storeID": store_id,
             "pageNumber": page_number,
             "pageSize": page_size,
             "sortBy": sort_by,
@@ -51,10 +52,11 @@ class CheapShark:
             "title": title,
             "output": output
         })
-        return self._get(f"/deals?storeID={store_id}", params)
+        return self._get("/deals", params)
 
     def deal_lookup(self, deal_id: str) -> dict:
-        return self._get(f"/deals?id={deal_id}")
+        params = {"id": deal_id}
+        return self._get("/deals", params)
 
     def get_games_list(
             self,
