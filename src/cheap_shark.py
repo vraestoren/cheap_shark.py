@@ -11,11 +11,10 @@ class CheapShark:
         }
 
     def _get(self, endpoint: str, params: dict = None) -> dict:
-        return self.session.get(
-            f"{self.api}{endpoint}", params=params).json()
+        return self.session.get(f"{self.api}{endpoint}", params=params).json()
 
     def _filter(self, data: dict) -> dict:
-        return {k: v for k, v in data.items() if v is not None}
+        return {key: value for key, value in data.items() if value is not None}
 
     def get_deals_list(
             self,
@@ -63,14 +62,20 @@ class CheapShark:
             steam_app_id: int,
             limit: int = 60,
             exact: int = 0) -> dict:
-        return self._get(
-            f"/games?title={title}&steamAppID={steam_app_id}&limit={limit}&exact={exact}")
+        params = {
+            "title": title,
+            "steamAppID": steam_app_id,
+            "limit": limit,
+            "exact": exact
+        return self._get("/games", params)
 
     def game_lookup(self, game_id: int) -> dict:
-        return self._get(f"/games?id={game_id}")
+        params = {"id": game_id}
+        return self._get("/games", params)
 
     def games_lookup(self, game_ids: str = "128,129,130") -> dict:
-        return self._get(f"/games?ids={game_ids}")
+        params = {"ids": game_ids}
+        return self._get("/games", params)
 
     def get_stores_list(self) -> dict:
         return self._get("/stores")
@@ -81,9 +86,17 @@ class CheapShark:
             email: str,
             game_id: int,
             price: str) -> dict:
-        return self._get(
-            f"/alerts?action={action}&email={email}&gameID={game_id}&price={price}")
+        params = {
+            "action": action,
+            "email": email,
+            "gameID": game_id,
+            "price": price
+        }
+        return self._get("/alerts", params)
 
     def manage_alerts(self, action: str, email: str) -> dict:
-        return self._get(
-            f"/alerts?action={action}&email={email}")
+        params = {
+            "action": action,
+            "email": email
+        }
+        return self._get("/alerts", params)
